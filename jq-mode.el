@@ -136,4 +136,8 @@
 \\{jq-mode-map}"
   :group 'jq-mode
   (setq-local indent-line-function #'jq-indent-line)
-  (setq-local font-lock-defaults '(jq-font-lock-keywords)))
+  (setq-local font-lock-defaults '(jq-font-lock-keywords))
+  (when (boundp 'company-mode)
+    (add-to-list 'company-keywords-alist
+		 `(jq-mode . ,(append jq--keywords
+				      jq--builtins)))))
