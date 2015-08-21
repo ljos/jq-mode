@@ -142,4 +142,6 @@
 		 `(jq-mode . ,(append jq--keywords
 				      jq--builtins)))))
 
+(provide 'jq-mode)
+
 ;;; jq-mode.el ends here
