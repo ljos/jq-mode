@@ -142,4 +142,4 @@
 		 `(jq-mode . ,(append jq--keywords
 				      jq--builtins)))))
 
-;; jq-mode.el ends here
+;;; jq-mode.el ends here
