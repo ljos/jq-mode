@@ -43,18 +43,6 @@
   :group 'jq
   :type 'integer)
 
-(defun jq-indent-line ()
-  "Indent current line as a jq-script."
-  (interactive)
-  (back-to-indentation)
-  (let ((indent-column 0))
-    (save-excursion
-      (forward-line -1)
-      (when (looking-at-p "\\s-*def .*:[^;]")
-	(setq indent-column (+ jq-indent-offset
-			       (current-indentation)))))
-    (indent-line-to indent-column)))
-
 (defconst jq--keywords
   '("as"
     "break"
@@ -67,6 +55,33 @@
     "module"
     "reduce"
     "then" "try"))
+
+(defun jq-indent-line ()
+  "Indent current line as a jq-script."
+  (interactive)
+  (skip-chars-forward "[:space:]")
+  (let ((indent-column 0)
+	(current (current-indentation)))
+    (save-excursion
+      (if (> 0 (forward-line -1))
+	  (setq indent-column (current-indentation))
+	(end-of-line)
+	(or (search-backward ";" (line-beginning-position) t)
+	    (back-to-indentation))
+	(skip-chars-forward "[:space:]" (line-end-position))
+	(when (looking-at-p
+	       (concat (regexp-opt (remove "end" jq--keywords)) "\\b"))
+	  (setq indent-column (+ indent-column jq-indent-offset)))))
+    (save-excursion
+      (back-to-indentation)
+      (save-excursion
+	(ignore-errors
+	  (up-list -1)
+	  (when (looking-at-p "(\\|{\\|\\[")
+	    (setq indent-column (1+ (current-column))))))
+      (when (looking-at-p "|")
+	(setq indent-column (+ indent-column jq-indent-offset)))
+      (indent-line-to indent-column))))
 
 (defconst jq--builtins
   '("add" "all" "and" "any" "arrays" "asci_upcase" "ascii_downcase"
