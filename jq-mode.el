@@ -1,4 +1,4 @@
-;;; sparql-mode.el --- Edit and interactively evaluate SPARQL queries.
+;;; jq-mode.el --- Edit and interactively evaluate SPARQL queries.
 
 ;; Copyright (C) 2015 Bjarte Johansen
 
@@ -19,7 +19,7 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with SPARQL mode. If not, see <http://www.gnu.org/licenses/>.
+;; along with jq-mode. If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
 
@@ -32,7 +32,7 @@
 ;;  (add-to-list 'load-path "/path/to/jq-mode-dir")
 ;;  (autoload 'sparql-mode "jq-mode.el"
 ;;   "Major mode for editing jq files" t)
-;;  (add-to-list 'auto-mode-alist '("\\.jq$" . sparql-mode))
+;;  (add-to-list 'auto-mode-alist '("\\.jq$" . jq-mode))
 
 (defgroup jq nil
   "Major mode for editing jq queries."
@@ -141,3 +141,5 @@
     (add-to-list 'company-keywords-alist
 		 `(jq-mode . ,(append jq--keywords
 				      jq--builtins)))))
+
+;; jq-mode.el ends here
