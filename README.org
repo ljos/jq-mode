@@ -16,13 +16,6 @@
   with .jq. Alternatively, run =M-x jq-mode= in an existing
   buffer containing jq commands.
 
-  It is also possible to add
-  #+BEGIN_SRC emacs-lisp
-   -*- mode: jq -*-
-  #+END_SRC
-  to the top of the file. This is a comment read by emacs to discover
-  what mode to use.
-
 * Bugs and Enhancements
   If you have a problem or would like to see it get better in a
   specific way, feel free to drop an issue in [[https://github.com/ljos/jq-mode/issues][the issue tracker]].
