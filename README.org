@@ -7,7 +7,7 @@
 
   #+BEGIN_SRC emacs-lisp
   (add-to-list 'load-path "/path/to/jq-mode-dir")
-  (autoload 'sparql-mode "jq-mode.el"
+  (autoload 'jq-mode "jq-mode.el"
       "Major mode for editing jq files" t)
   (add-to-list 'auto-mode-alist '("\\.jq$" . jq-mode))
   #+END_SRC
