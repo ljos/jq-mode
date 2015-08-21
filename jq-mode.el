@@ -54,7 +54,8 @@
     "label"
     "module"
     "reduce"
-    "then" "try"))
+    "then" "try")
+  "The keywords used in jq.")
 
 (defun jq-indent-line ()
   "Indent current line as a jq-script."
@@ -111,10 +112,12 @@
     "tostring" "transpose" "truncate_stream" "type"
     "unique" "unique_by" "until"
     "values"
-    "walk" "while" "with_entries"))
+    "walk" "while" "with_entries")
+  "All builtin functions in jq.")
 
 (defconst jq--escapings
-  '("text" "json" "html" "uri" "csv" "tsv" "sh" "base64"))
+  '("text" "json" "html" "uri" "csv" "tsv" "sh" "base64")
+  "Jq escaping directives.")
 
 (defconst jq-font-lock-keywords
   (eval-when-compile
@@ -141,5 +144,4 @@
     (add-to-list 'company-keywords-alist
 		 `(jq-mode . ,(append jq--keywords
 				      jq--builtins)))))
-
 ;; jq-mode.el ends here
