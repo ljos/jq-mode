@@ -4,6 +4,7 @@
 
 ;; Author: Bjarte Johansen <Bjarte dot Johansen at gmail dot com>
 ;; Homepage: https://github.com/ljos/jq-mode
+;; Package-Requires: ((emacs "24.3"))
 ;; Version: 0.1.0
 
 ;; This file is not part of GNU Emacs.
@@ -30,7 +31,7 @@
 ;; Add to your Emacs config:
 
 ;;  (add-to-list 'load-path "/path/to/jq-mode-dir")
-;;  (autoload 'sparql-mode "jq-mode.el"
+;;  (autoload 'jq-mode "jq-mode.el"
 ;;   "Major mode for editing jq files" t)
 ;;  (add-to-list 'auto-mode-alist '("\\.jq$" . jq-mode))
 
@@ -131,6 +132,7 @@
     map)
   "Keymap for `jq-mode'.")
 
+;;;###autoload
 (define-derived-mode jq-mode prog-mode "jq"
   "Major mode for jq scripts.
 \\{jq-mode-map}"
@@ -142,4 +144,8 @@
 		 `(jq-mode . ,(append jq--keywords
 				      jq--builtins)))))
 
+;;;###autoload
+(add-to-list 'auto-mode-alist '("\\.jq$" . jq-mode))
+
+(provide 'jq-mode)
 ;; jq-mode.el ends here
