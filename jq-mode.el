@@ -1,4 +1,4 @@
-;;; jq-mode.el --- Edit and interactively evaluate SPARQL queries.
+;;; jq-mode.el --- Edit jq scripts.
 
 ;; Copyright (C) 2015 Bjarte Johansen
 
