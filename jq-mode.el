@@ -144,4 +144,7 @@
     (add-to-list 'company-keywords-alist
 		 `(jq-mode . ,(append jq--keywords
 				      jq--builtins)))))
-;; jq-mode.el ends here
+
+(provide 'jq-mode)
+
+;;; jq-mode.el ends here
