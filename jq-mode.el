@@ -121,13 +121,12 @@
   "Jq escaping directives.")
 
 (defconst jq-font-lock-keywords
-  (eval-when-compile
-    `(;; Variables
-      ("\\$\\w+" 0 font-lock-variable-name-face)
-      ;; Format strings and escaping
-      (,(concat "@" (regexp-opt jq--escapings) "\\b") . font-lock-type-face)
-      ;; Keywords
-      ,(concat "\\b" (regexp-opt jq--keywords) "\\b"))))
+  `( ;; Variables
+    ("\\$\\w+" 0 font-lock-variable-name-face)
+    ;; Format strings and escaping
+    (,(concat "@" (regexp-opt jq--escapings) "\\b") . font-lock-type-face)
+    ;; Keywords
+    ,(concat "\\b" (regexp-opt jq--keywords) "\\b")))
 
 
 (defvar jq-mode-map
