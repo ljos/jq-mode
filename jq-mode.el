@@ -61,7 +61,6 @@
 (defun jq-indent-line ()
   "Indent current line as a jq-script."
   (interactive)
-  (skip-chars-forward "[:space:]")
   (let ((indent-column 0)
 	(current (current-indentation)))
     (save-excursion
@@ -83,7 +82,15 @@
 	    (setq indent-column (1+ (current-column))))))
       (when (looking-at-p "|")
 	(setq indent-column (+ indent-column jq-indent-offset)))
-      (indent-line-to indent-column))))
+      (end-of-line)
+      (delete-horizontal-space)
+      (indent-line-to indent-column)))
+  (when (let ((search-spaces-regexp t))
+	  (string-match-p "^ *$"
+			  (buffer-substring-no-properties
+			   (line-beginning-position)
+			   (point))))
+    (skip-chars-forward "[:space:]" (line-end-position))))
 
 (defconst jq--builtins
   '("add" "all" "and" "any" "arrays" "asci_upcase" "ascii_downcase"
@@ -128,7 +135,6 @@
     ;; Keywords
     ,(concat "\\b" (regexp-opt jq--keywords) "\\b")))
 
-
 (defvar jq-mode-map
   (let ((map (make-sparse-keymap)))
     map)
@@ -138,7 +144,7 @@
 (define-derived-mode jq-mode prog-mode "jq"
   "Major mode for jq scripts.
 \\{jq-mode-map}"
-  :group 'jq-mode
+  :group 'jq
   (setq-local indent-line-function #'jq-indent-line)
   (setq-local font-lock-defaults '(jq-font-lock-keywords))
   (when (boundp 'company-mode)
@@ -147,6 +153,123 @@
 				      jq--builtins)))))
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.jq$" . jq-mode))
+
+
+;;; jq-interactively-region
+(defgroup jq-interactive nil
+  "Major mode for editing json with jq."
+  :group 'languages)
+
+(defcustom jq-interactive-command "jq"
+  "Command to use for calling jq."
+  :group 'jq-interactive
+  :type 'string)
+
+(defcustom jq-interactive-default-options "-c"
+  "Command line options to pass to jq."
+  :group 'jq-interactive
+  :type 'string)
+
+(defcustom jq-interactive-default-prompt "jq: "
+  "Default prompt to use in minibuffer."
+  :group 'jq-interactive
+  :type 'string)
+
+(defvar jq-interactive-history nil)
+
+(defvar jq-interactive--last-minibuffer-contents "")
+(defvar jq-interactive--positions nil)
+(defvar jq-interactive--buffer nil)
+(defvar jq-interactive--overlay nil)
+
+(defun jq-interactive--run-command ()
+  (shell-command-to-string
+   (format "%s %s %s %s"
+	   jq-interactive-command
+	   jq-interactive-default-options
+	   (shell-quote-argument
+	    jq-interactive--last-minibuffer-contents)
+	   (let ((beg (car jq-interactive--positions))
+		 (end (cdr jq-interactive--positions))
+		 (tmp (make-temp-file "json-")))
+	     (with-temp-file tmp
+	       (insert (with-current-buffer jq-interactive--buffer
+			 (buffer-substring-no-properties beg end))))
+	     tmp))))
+
+(defun jq-interactive--feedback ()
+  (save-excursion
+    (let ((font-lock-defaults '(jq-font-lock-keywords)))
+      (font-lock-fontify-region (point) (point-max))))
+  (with-current-buffer jq-interactive--buffer
+    (overlay-put jq-interactive--overlay
+		 'after-string
+		 (jq-interactive--run-command))))
+
+(defun jq-interactive--minibuffer-setup ()
+  (setq-local font-lock-defaults '(jq-font-lock-keywords)))
+
+(defun jq-interactive--quit ()
+  (remove-hook 'after-change-functions #'jq-interactive--update)
+  (remove-hook 'minibuffer-setup-hook #'jq-interactive--minibuffer-setup)
+  (delete-overlay jq-interactive--overlay))
+
+(defun jq-interactive--update (beg end len)
+  (let ((contents (minibuffer-contents-no-properties)))
+    (unless (or (not (minibufferp))
+		(and (string= "" contents)
+		     (equal last-command 'previous-history-element))
+		(string= contents jq-interactive--last-minibuffer-contents))
+      (setq jq-interactive--last-minibuffer-contents contents)
+      (jq-interactive--feedback))))
+
+(defun jq-interactive-indent-line ()
+  (interactive)
+  (jq-indent-line)
+  (save-excursion
+    (beginning-of-line)
+    (insert (make-string (length jq-interactive-default-prompt) ?\s)))
+  (skip-chars-forward "[:space:]"))
+
+(defvar jq-interactive-map
+  (let ((map (make-sparse-keymap)))
+    (set-keymap-parent map minibuffer-local-map)
+    (define-key map (kbd "<tab>") #'jq-interactive-indent-line)
+    (define-key map (kbd "C-j") #'electric-newline-and-maybe-indent)
+    map)
+  "Keymap for `jq-interactively-edit-region'.")
+
+;;;###autoload
+(defun jq-interactively (beg end)
+  (interactive
+   (if (region-active-p)
+       (list (region-beginning)
+	     (region-end))
+     (list (point-min)
+	   (point-max))))
+  (unwind-protect
+      (progn
+	(setq jq-interactive--overlay (make-overlay beg end))
+	(overlay-put jq-interactive--overlay 'invisible t)
+	(setq jq-interactive--positions (cons beg end))
+	(setq jq-interactive--buffer (current-buffer))
+	(setq jq-interactive--last-minibuffer-contents "")
+	(jq-interactive--feedback)
+	(add-hook 'after-change-functions #'jq-interactive--update)
+	(add-hook 'minibuffer-setup-hook #'jq-interactive--minibuffer-setup)
+	(save-excursion
+	  (deactivate-mark)
+	  (read-from-minibuffer
+	   jq-interactive-default-prompt
+	   nil
+	   jq-interactive-map
+	   nil
+	   jq-interactive-history))
+	(goto-char beg)
+	(delete-region beg end)
+	(insert (plist-get (overlay-properties jq-interactive--overlay)
+			   'after-string)))
+    (jq-interactive--quit)))
 
 (provide 'jq-mode)
 
