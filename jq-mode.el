@@ -140,6 +140,14 @@
     map)
   "Keymap for `jq-mode'.")
 
+(defvar jq-mode-syntax-table
+  (let ((syntax-table (make-syntax-table)))
+    ;; Comments
+    (modify-syntax-entry ?# "<" syntax-table)
+    (modify-syntax-entry ?\n ">" syntax-table)
+    syntax-table)
+  "Syntax table for `jq-mode.'")
+
 ;;;###autoload
 (define-derived-mode jq-mode prog-mode "jq"
   "Major mode for jq scripts.
@@ -147,6 +155,7 @@
   :group 'jq
   (setq-local indent-line-function #'jq-indent-line)
   (setq-local font-lock-defaults '(jq-font-lock-keywords))
+  (setq-local comment-start "# ")
   (when (boundp 'company-mode)
     (add-to-list 'company-keywords-alist
 		 `(jq-mode . ,(append jq--keywords
