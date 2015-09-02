@@ -155,7 +155,7 @@
 (add-to-list 'auto-mode-alist '("\\.jq$" . jq-mode))
 
 
-;;; jq-interactively-region
+;;; jq-interactively
 (defgroup jq-interactive nil
   "Major mode for editing json with jq."
   :group 'languages)
@@ -237,7 +237,7 @@
     (define-key map (kbd "<tab>") #'jq-interactive-indent-line)
     (define-key map (kbd "C-j") #'electric-newline-and-maybe-indent)
     map)
-  "Keymap for `jq-interactively-edit-region'.")
+  "Keymap for `jq-interactively'.")
 
 ;;;###autoload
 (defun jq-interactively (beg end)
