@@ -1,4 +1,4 @@
-;;; test-ob-prolog.el --- tests for ob-prolog.el
+;;; ob-jq-test.el --- tests for ob-jq.el
 
 ;; Copyright (c) 2015 Bjarte Johansen
 ;; Authors: Bjarte Johansen
@@ -23,8 +23,8 @@
 (require 'ert)
 (require 'org-id)
 
-(unless (featurep 'ob-prolog)
-  (signal 'missing-test-dependency "Support for Prolog code blocks"))
+(unless (featurep 'ob-jq)
+  (signal 'missing-test-dependency "Support for jq code blocks"))
 
 (defmacro ob-jq-test/test-src-block (name &rest body)
     (declare (indent 1))
@@ -69,6 +69,6 @@
 	       (kill-buffer ,active-session)))))))
 
 (ert-deftest ob-jq-test/simple-execution ()
-  "Test simple execution of prolog source block."
+  "Test simple execution of jq source block."
   (ob-jq-test/test-src-block simple-execution
     (should (string= "test" (org-babel-execute-src-block)))))
