@@ -26,7 +26,7 @@
 
 ;; Mode for editing jq queries.
 
-;; Usage:
+;;; Usage:
 
 ;; Add to your Emacs config:
 
@@ -35,6 +35,7 @@
 ;;   "Major mode for editing jq files" t)
 ;;  (add-to-list 'auto-mode-alist '("\\.jq$" . jq-mode))
 
+;;; Code:
 (defgroup jq nil
   "Major mode for editing jq queries."
   :group 'languages)
