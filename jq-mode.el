@@ -175,7 +175,7 @@
   :group 'jq-interactive
   :type 'string)
 
-(defcustom jq-interactive-default-options "-c"
+(defcustom jq-interactive-default-options ""
   "Command line options to pass to jq."
   :group 'jq-interactive
   :type 'string)
