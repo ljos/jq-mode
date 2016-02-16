@@ -214,7 +214,12 @@
   (with-current-buffer jq-interactive--buffer
     (overlay-put jq-interactive--overlay
 		 'after-string
-		 (jq-interactive--run-command))))
+		 (with-temp-buffer
+		   (insert (jq-interactive--run-command))
+		   (ignore-errors
+		     (json-mode)
+		     (font-lock-fontify-region (point-min) (point-max)))
+		   (buffer-string)))))
 
 (defun jq-interactive--minibuffer-setup ()
   (setq-local font-lock-defaults '(jq-font-lock-keywords)))
