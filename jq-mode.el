@@ -239,6 +239,7 @@
       (jq-interactive--feedback))))
 
 (defun jq-interactive-indent-line ()
+  "Indents a jq expression in the jq-interactive mini-buffer."
   (interactive)
   (jq-indent-line)
   (save-excursion
@@ -256,6 +257,7 @@
 
 ;;;###autoload
 (defun jq-interactively (beg end)
+  "Runs jq interactively on a json buffer."
   (interactive
    (if (region-active-p)
        (list (region-beginning)
