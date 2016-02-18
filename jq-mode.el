@@ -94,7 +94,7 @@
     (skip-chars-forward "[:space:]" (line-end-position))))
 
 (defconst jq--builtins
-  '("add" "all" "and" "any" "arrays" "asci_upcase" "ascii_downcase"
+  '("add" "all" "and" "any" "arrays" "ascii_upcase" "ascii_downcase"
     "booleans" "bsearch"
     "capture" "combinations" "contains"
     "debug" "del"
