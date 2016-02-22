@@ -290,4 +290,4 @@
 
 (provide 'jq-mode)
 
-;; jq-mode.el ends here
+;;; jq-mode.el ends here
