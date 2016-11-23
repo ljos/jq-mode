@@ -149,6 +149,11 @@
     syntax-table)
   "Syntax table for `jq-mode.'")
 
+(with-eval-after-load 'company-keywords
+  (add-to-list 'company-keywords-alist
+	       `(jq-mode . ,(append jq--keywords
+				    jq--builtins))))
+
 ;;;###autoload
 (define-derived-mode jq-mode prog-mode "jq"
   "Major mode for jq scripts.
@@ -156,11 +161,7 @@
   :group 'jq
   (setq-local indent-line-function #'jq-indent-line)
   (setq-local font-lock-defaults '(jq-font-lock-keywords))
-  (setq-local comment-start "# ")
-  (when (boundp 'company-mode)
-    (add-to-list 'company-keywords-alist
-		 `(jq-mode . ,(append jq--keywords
-				      jq--builtins)))))
+  (setq-local comment-start "# "))
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.jq$" . jq-mode))
 
