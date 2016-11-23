@@ -191,19 +191,25 @@
 (defvar jq-interactive--overlay nil)
 
 (defun jq-interactive--run-command ()
-  (shell-command-to-string
-   (format "%s %s %s %s"
-	   jq-interactive-command
-	   jq-interactive-default-options
-	   (shell-quote-argument
-	    jq-interactive--last-minibuffer-contents)
-	   (let ((beg (car jq-interactive--positions))
-		 (end (cdr jq-interactive--positions))
-		 (tmp (make-temp-file "json-")))
-	     (with-temp-file tmp
-	       (insert (with-current-buffer jq-interactive--buffer
-			 (buffer-substring-no-properties beg end))))
-	     tmp))))
+  (with-temp-buffer
+    (let ((output (current-buffer)))
+      (with-current-buffer jq-interactive--buffer
+	(call-process-region (point-min)
+			     (point-max)
+                             shell-file-name
+			     nil
+			     output
+			     nil
+			     shell-command-switch
+			     (format "%s %s %s"
+				     jq-interactive-command
+				     jq-interactive-default-options
+				     (shell-quote-argument
+				      jq-interactive--last-minibuffer-contents))))
+      (ignore-errors
+	(json-mode)
+	(font-lock-fontify-region (point-min) (point-max)))
+      (buffer-string))))
 
 (defun jq-interactive--feedback ()
   (save-excursion
@@ -212,12 +218,7 @@
   (with-current-buffer jq-interactive--buffer
     (overlay-put jq-interactive--overlay
 		 'after-string
-		 (with-temp-buffer
-		   (insert (jq-interactive--run-command))
-		   (ignore-errors
-		     (json-mode)
-		     (font-lock-fontify-region (point-min) (point-max)))
-		   (buffer-string)))))
+		 (jq-interactive--run-command))))
 
 (defun jq-interactive--minibuffer-setup ()
   (setq-local font-lock-defaults '(jq-font-lock-keywords)))
