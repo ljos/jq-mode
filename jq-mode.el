@@ -162,9 +162,6 @@
   (setq-local indent-line-function #'jq-indent-line)
   (setq-local font-lock-defaults '(jq-font-lock-keywords))
   (setq-local comment-start "# "))
-;;;###autoload
-(add-to-list 'auto-mode-alist '("\\.jq$" . jq-mode))
-
 
 ;;; jq-interactively
 (defgroup jq-interactive nil
