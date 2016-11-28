@@ -243,7 +243,7 @@
   (jq-indent-line)
   (save-excursion
     (beginning-of-line)
-    (insert (make-string (length jq-interactive-default-prompt) ?\s)))
+    (insert-char ?\s (length jq-interactive-default-prompt)))
   (skip-chars-forward "[:space:]"))
 
 (defvar jq-interactive-map
