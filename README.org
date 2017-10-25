@@ -2,6 +2,7 @@
   =jq-mode= is an emacs major mode for editing [[https://github.com/stedolan/jq][jq]]-scripts.
 
 * Getting started
+  [[https://melpa.org/#/jq-mode][file:https://melpa.org/packages/jq-mode-badge.svg]] [[https://stable.melpa.org/#/jq-mode][file:https://stable.melpa.org/packages/jq-mode-badge.svg]]
   - Download jq-mode.el and put it in a directory somewhere.
   - Add the following to your .emacs file
 
