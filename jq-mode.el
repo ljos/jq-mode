@@ -143,6 +143,9 @@
 
 (defvar jq-mode-syntax-table
   (let ((syntax-table (make-syntax-table)))
+    ;; Strings
+    (modify-syntax-entry ?\" "\"\"" syntax-table)
+
     ;; Comments
     (modify-syntax-entry ?# "<" syntax-table)
     (modify-syntax-entry ?\n ">" syntax-table)
