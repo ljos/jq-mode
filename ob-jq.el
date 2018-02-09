@@ -37,6 +37,7 @@
 ;;; Code:
 (require 'ob)
 (require 'jq-mode)
+(require 'json)
 
 (defvar org-babel-jq-command "jq"
   "Name of the jq executable command.")
@@ -51,6 +52,19 @@
 
 (defvar org-babel-default-header-args:jq '()
   "Default arguments for evaluating a jq source block.")
+
+(defun org-babel-jq-table-to-json (data)
+  "Convert org table to JSON.
+
+First line specifies the keys."
+  (let* ((header (car data))
+         (data (cdr data)))
+    (while (eq (car data) 'hline)
+      (setq data (cdr data)))
+    (json-encode
+     (mapcar
+      (lambda (row) (cl-mapcar 'cons header row))
+      data))))
 
 (defun org-babel-execute:jq (body params)
   "Execute a block of jq code with org-babel.  This function is
@@ -68,7 +82,10 @@ called by `org-babel-execute-src-block'"
                     (let ((tmp (org-babel-temp-file "jq-stdin-"))
                           (res (org-babel-ref-resolve stdin)))
                       (with-temp-file tmp
-                        (insert res)
+                        (insert
+                         (cond
+                          ((listp res) (org-babel-jq-table-to-json res))
+                          (t res)))
                         tmp)))))
          (cmd (mapconcat #'identity
                          (remq nil
@@ -87,10 +104,11 @@ called by `org-babel-execute-src-block'"
        (when results
          (org-babel-result-cond result-params
            results
-           (let ((tmp (org-babel-temp-file "jq-results-")))
-             (with-temp-file tmp
-               (insert results))
-             (org-babel-import-elisp-from-file tmp)))))
+           (with-temp-buffer
+             (insert results)
+             (json-mode)
+             (json-mode-beautify)
+             (buffer-string)))))
      (org-babel-pick-name (cdr (assq :colname-names params))
                           (cdr (assq :colnames params)))
      (org-babel-pick-name (cdr (assq :rowname-names params))
