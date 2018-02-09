@@ -57,44 +57,44 @@
 called by `org-babel-execute-src-block'"
   (message "executing jq source code block")
   (let* ((result-params (cdr (assq :result-params params)))
-	 (cmd-line (cdr (assq :cmd-line params)))
-	 (in-file (cdr (assq :in-file params)))
-	 (code-file (let ((file (org-babel-temp-file "jq-")))
-		      (with-temp-file file
-			(insert body)
-			file)))
-	 (stdin (let ((stdin (cdr (assq :stdin params))))
-		  (when stdin
-		    (let ((tmp (org-babel-temp-file "jq-stdin-"))
-			  (res (org-babel-ref-resolve stdin)))
-		      (with-temp-file tmp
-			(insert res)
-			tmp)))))
-	 (cmd (mapconcat #'identity
-			 (remq nil
-			       (list org-babel-jq-command
-				     (format "--from-file \"%s\"" code-file)
-				     cmd-line
-				     in-file))
-			 " ")))
+         (cmd-line (cdr (assq :cmd-line params)))
+         (in-file (cdr (assq :in-file params)))
+         (code-file (let ((file (org-babel-temp-file "jq-")))
+                      (with-temp-file file
+                        (insert body)
+                        file)))
+         (stdin (let ((stdin (cdr (assq :stdin params))))
+                  (when stdin
+                    (let ((tmp (org-babel-temp-file "jq-stdin-"))
+                          (res (org-babel-ref-resolve stdin)))
+                      (with-temp-file tmp
+                        (insert res)
+                        tmp)))))
+         (cmd (mapconcat #'identity
+                         (remq nil
+                               (list org-babel-jq-command
+                                     (format "--from-file \"%s\"" code-file)
+                                     cmd-line
+                                     in-file))
+                         " ")))
     (org-babel-reassemble-table
      (let ((results
-	    (cond
-	     (stdin (with-temp-buffer
-		      (call-process-shell-command cmd stdin (current-buffer))
-		      (buffer-string)))
-	     (t (org-babel-eval cmd "")))))
+            (cond
+             (stdin (with-temp-buffer
+                      (call-process-shell-command cmd stdin (current-buffer))
+                      (buffer-string)))
+             (t (org-babel-eval cmd "")))))
        (when results
-	 (org-babel-result-cond result-params
-	   results
-	   (let ((tmp (org-babel-temp-file "jq-results-")))
-	     (with-temp-file tmp
-	       (insert results))
-	     (org-babel-import-elisp-from-file tmp)))))
+         (org-babel-result-cond result-params
+           results
+           (let ((tmp (org-babel-temp-file "jq-results-")))
+             (with-temp-file tmp
+               (insert results))
+             (org-babel-import-elisp-from-file tmp)))))
      (org-babel-pick-name (cdr (assq :colname-names params))
-			  (cdr (assq :colnames params)))
+                          (cdr (assq :colnames params)))
      (org-babel-pick-name (cdr (assq :rowname-names params))
-			  (cdr (assq :rownames params))))))
+                          (cdr (assq :rownames params))))))
 
 (provide 'ob-jq)
 ;;; ob-jq.el ends here
