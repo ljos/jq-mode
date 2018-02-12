@@ -50,7 +50,9 @@
     (:cmd-line . :any))
   "Jq specific header arguments.")
 
-(defvar org-babel-default-header-args:jq '()
+(defvar org-babel-default-header-args:jq '(
+                                           (:results . "output")
+                                           )
   "Default arguments for evaluating a jq source block.")
 
 (defun org-babel-jq-table-to-json (data)
@@ -104,11 +106,28 @@ called by `org-babel-execute-src-block'"
        (when results
          (org-babel-result-cond result-params
            results
-           (with-temp-buffer
-             (insert results)
-             (json-mode)
-             (json-mode-beautify)
-             (buffer-string)))))
+           (let ((data (json-read-from-string results)))
+             ;; If we have an array we might have a table
+             (if (and (vectorp data)
+                      (> (length data) 0))
+                 (cond
+                  ;; If the first element is a vector then just "unpack"
+                  ;; the vector of vectors
+                  ((vectorp (aref data 0))
+                   (mapcar (lambda (row) (append row nil)) data))
+                  ;; If the first element is a list we will assume we
+                  ;; have an array of objects, so generate the colnames
+                  ;; accordingly
+                  ((consp (aref data 0))
+                   (let ((colnames (mapcar 'car (aref data 0))))
+                     (unless (assq :colnames params)
+                       (push `(:colnames . ,colnames) params))
+                     (mapcar (lambda (row) (mapcar 'cdr row)) data)))
+                  ;; For a vector of scalars just return it as an
+                  ;; array, it will make a single-row table
+                  (t data))
+               ;; If we have an object then just output it as string
+               results)))))
      (org-babel-pick-name (cdr (assq :colname-names params))
                           (cdr (assq :colnames params)))
      (org-babel-pick-name (cdr (assq :rowname-names params))
