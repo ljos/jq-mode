@@ -125,7 +125,7 @@ called by `org-babel-execute-src-block'"
                      (mapcar (lambda (row) (mapcar 'cdr row)) data)))
                   ;; For a vector of scalars just return it as an
                   ;; array, it will make a single-row table
-                  (t data))
+                  (t (list (append data nil))))
                ;; If we have an object then just output it as string
                results)))))
      (org-babel-pick-name (cdr (assq :colname-names params))
