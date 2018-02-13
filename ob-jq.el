@@ -37,6 +37,7 @@
 ;;; Code:
 (require 'ob)
 (require 'jq-mode)
+(require 'json)
 
 (defvar org-babel-jq-command "jq"
   "Name of the jq executable command.")
@@ -49,52 +50,88 @@
     (:cmd-line . :any))
   "Jq specific header arguments.")
 
-(defvar org-babel-default-header-args:jq '()
+(defvar org-babel-default-header-args:jq '(
+                                           (:results . "output")
+                                           )
   "Default arguments for evaluating a jq source block.")
+
+(defun org-babel-jq-table-to-json (data)
+  "Convert org table to JSON.
+
+First line specifies the keys."
+  (let* ((header (car data))
+         (data (cdr data)))
+    (while (eq (car data) 'hline)
+      (setq data (cdr data)))
+    (json-encode
+     (mapcar
+      (lambda (row) (cl-mapcar 'cons header row))
+      data))))
 
 (defun org-babel-execute:jq (body params)
   "Execute a block of jq code with org-babel.  This function is
 called by `org-babel-execute-src-block'"
   (message "executing jq source code block")
   (let* ((result-params (cdr (assq :result-params params)))
-	 (cmd-line (cdr (assq :cmd-line params)))
-	 (in-file (cdr (assq :in-file params)))
-	 (code-file (let ((file (org-babel-temp-file "jq-")))
-		      (with-temp-file file
-			(insert body)
-			file)))
-	 (stdin (let ((stdin (cdr (assq :stdin params))))
-		  (when stdin
-		    (let ((tmp (org-babel-temp-file "jq-stdin-"))
-			  (res (org-babel-ref-resolve stdin)))
-		      (with-temp-file tmp
-			(insert res)
-			tmp)))))
-	 (cmd (mapconcat #'identity
-			 (remq nil
-			       (list org-babel-jq-command
-				     (format "--from-file \"%s\"" code-file)
-				     cmd-line
-				     in-file))
-			 " ")))
+         (cmd-line (cdr (assq :cmd-line params)))
+         (in-file (cdr (assq :in-file params)))
+         (code-file (let ((file (org-babel-temp-file "jq-")))
+                      (with-temp-file file
+                        (insert body)
+                        file)))
+         (stdin (let ((stdin (cdr (assq :stdin params))))
+                  (when stdin
+                    (let ((tmp (org-babel-temp-file "jq-stdin-"))
+                          (res (org-babel-ref-resolve stdin)))
+                      (with-temp-file tmp
+                        (insert
+                         (cond
+                          ((listp res) (org-babel-jq-table-to-json res))
+                          (t res)))
+                        tmp)))))
+         (cmd (mapconcat #'identity
+                         (remq nil
+                               (list org-babel-jq-command
+                                     (format "--from-file \"%s\"" code-file)
+                                     cmd-line
+                                     in-file))
+                         " ")))
     (org-babel-reassemble-table
      (let ((results
-	    (cond
-	     (stdin (with-temp-buffer
-		      (call-process-shell-command cmd stdin (current-buffer))
-		      (buffer-string)))
-	     (t (org-babel-eval cmd "")))))
+            (cond
+             (stdin (with-temp-buffer
+                      (call-process-shell-command cmd stdin (current-buffer))
+                      (buffer-string)))
+             (t (org-babel-eval cmd "")))))
        (when results
-	 (org-babel-result-cond result-params
-	   results
-	   (let ((tmp (org-babel-temp-file "jq-results-")))
-	     (with-temp-file tmp
-	       (insert results))
-	     (org-babel-import-elisp-from-file tmp)))))
+         (org-babel-result-cond result-params
+           results
+           (let ((data (json-read-from-string results)))
+             ;; If we have an array we might have a table
+             (if (and (vectorp data)
+                      (> (length data) 0))
+                 (cond
+                  ;; If the first element is a vector then just "unpack"
+                  ;; the vector of vectors
+                  ((vectorp (aref data 0))
+                   (mapcar (lambda (row) (append row nil)) data))
+                  ;; If the first element is a list we will assume we
+                  ;; have an array of objects, so generate the colnames
+                  ;; accordingly
+                  ((consp (aref data 0))
+                   (let ((colnames (mapcar 'car (aref data 0))))
+                     (unless (assq :colnames params)
+                       (push `(:colnames . ,colnames) params))
+                     (mapcar (lambda (row) (mapcar 'cdr row)) data)))
+                  ;; For a vector of scalars just return it as an
+                  ;; array, it will make a single-row table
+                  (t (list (append data nil))))
+               ;; If we have an object then just output it as string
+               results)))))
      (org-babel-pick-name (cdr (assq :colname-names params))
-			  (cdr (assq :colnames params)))
+                          (cdr (assq :colnames params)))
      (org-babel-pick-name (cdr (assq :rowname-names params))
-			  (cdr (assq :rownames params))))))
+                          (cdr (assq :rownames params))))))
 
 (provide 'ob-jq)
 ;;; ob-jq.el ends here
