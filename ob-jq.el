@@ -46,12 +46,16 @@
 (add-to-list 'org-babel-tangle-lang-exts '("jq" . "jq"))
 
 (defconst org-babel-header-args:jq
-  '((:in-file  . :any)
-    (:cmd-line . :any))
+  '(
+    (:in-file  . :any)
+    (:cmd-line . :any)
+    (:compact  . ((yes no)))
+    )
   "Jq specific header arguments.")
 
 (defvar org-babel-default-header-args:jq '(
                                            (:results . "output")
+                                           (:compact . "no")
                                            )
   "Default arguments for evaluating a jq source block.")
 
@@ -73,6 +77,7 @@ First line specifies the keys."
 called by `org-babel-execute-src-block'"
   (message "executing jq source code block")
   (let* ((result-params (cdr (assq :result-params params)))
+         (compact (equal "yes" (cdr (assq :compact params))))
          (cmd-line (cdr (assq :cmd-line params)))
          (in-file (cdr (assq :in-file params)))
          (code-file (let ((file (org-babel-temp-file "jq-")))
@@ -93,6 +98,7 @@ called by `org-babel-execute-src-block'"
                          (remq nil
                                (list org-babel-jq-command
                                      (format "--from-file \"%s\"" code-file)
+                                     (when compact "--compact-output")
                                      cmd-line
                                      in-file))
                          " ")))
