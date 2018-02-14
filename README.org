@@ -36,6 +36,12 @@
   =jq-mode= provides =ob-jq= for working with literate programming in
   Org mode.
 
+** jq specific header arguments
+
+=ob-jq= provides some additional header arguments:
+
+- =:compact= :: Add =-c= to =jq= arguments list suppressing pretty printing
+
 * Bugs and Enhancements
   If you have a problem or would like to see it get better in a
   specific way, feel free to drop an issue in [[https://github.com/ljos/jq-mode/issues][the issue tracker]].
