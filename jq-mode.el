@@ -1,11 +1,11 @@
 ;;; jq-mode.el --- Edit jq scripts.
 
-;; Copyright (C) 2015--2017 Bjarte Johansen
+;; Copyright (C) 2015--2018 Bjarte Johansen
 
 ;; Author: Bjarte Johansen <Bjarte dot Johansen at gmail dot com>
 ;; Homepage: https://github.com/ljos/jq-mode
 ;; Package-Requires: ((emacs "25.1"))
-;; Version: 0.3.0
+;; Version: 0.4.0
 
 ;; This file is not part of GNU Emacs.
 
@@ -94,21 +94,23 @@
     (skip-chars-forward "[:space:]" (line-end-position))))
 
 (defconst jq--builtins
-  '("add" "all" "and" "any" "arrays" "ascii_upcase" "ascii_downcase"
-    "booleans" "bsearch"
+  '("INDEX" "IN"
+    "JOIN"
+    "add" "all" "and" "any" "arrays" "ascii_upcase" "ascii_downcase"
+    "booleans" "bsearch" "builtins"
     "capture" "combinations" "contains"
-    "debug" "del"
+    "debug" "del" "delpaths"
     "empty" "endswith" "env" "error" "explode"
     "finites" "first" "flatten" "floor" "from_entries" "fromdate"
     "fromdateiso8601" "fromjson" "fromstream"
     "getpath" "gmtime" "group_by" "gsub"
-    "has"
-    "implode" "in" "index" "indicies" "infinite" "input" "input_filename"
-    "input_line_number" "inputs" "inside" "isfinite" "isinfinite" "isnan"
-    "isnormal" "iterables"
+    "has", "halt" "halt_error"
+    "implode" "in" "index" "indices" "infinite" "input" "input_filename"
+    "input_line_number" "inputs" "inside" "isempty" "isfinite" "isinfinite"
+    "isnan" "isnormal" "iterables"
     "join"
     "keys" "keys_unsorted"
-    "last" "leaf_paths" "length" "limit" "ltrimstr"
+    "last" "leaf_paths" "length" "limit" "ltrimstr" "localtime"
     "map" "map_values" "match" "max" "max_by" "min" "min_by" "mktime"
     "modulemeta"
     "nan" "normals" "not" "now" "nth" "nulls" "numbers"
@@ -116,10 +118,11 @@
     "path" "paths"
     "range" "recurse" "recurse_down" "reverse" "rindex" "rtrimstr"
     "scalars" "scan" "select" "setpath" "sort" "sort_by" "split" "split"
-    "splits" "sqrt" "startswith" "strftime" "strings" "strptime" "sub"
+    "stderr" "splits" "sqrt" "startswith" "strftime" "strings" "strptime" "sub"
+    "strflocaltime"
     "test" "to_entries" "todate" "todateiso8601" "tojson" "tonumber" "tostream"
     "tostring" "transpose" "truncate_stream" "type"
-    "unique" "unique_by" "until"
+    "unique" "unique_by" "until" "utf8bytelength"
     "values"
     "walk" "while" "with_entries")
   "All builtin functions in jq.")
