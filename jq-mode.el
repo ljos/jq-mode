@@ -5,7 +5,7 @@
 ;; Author: Bjarte Johansen <Bjarte dot Johansen at gmail dot com>
 ;; Homepage: https://github.com/ljos/jq-mode
 ;; Package-Requires: ((emacs "25.1"))
-;; Version: 0.4.0
+;; Version: 0.4.1
 
 ;; This file is not part of GNU Emacs.
 
@@ -94,38 +94,48 @@
     (skip-chars-forward "[:space:]" (line-end-position))))
 
 (defconst jq--builtins
-  '("INDEX" "IN"
+  '("IN" "INDEX"
     "JOIN"
-    "add" "all" "and" "any" "arrays" "ascii_upcase" "ascii_downcase"
+    "acos" "acosh" "add" "all" "any" "arrays" "ascii_downcase" "ascii_upcase"
+    "asin" "asinh" "atan" "atan2" "atanh"
     "booleans" "bsearch" "builtins"
-    "capture" "combinations" "contains"
-    "debug" "del" "delpaths"
-    "empty" "endswith" "env" "error" "explode"
-    "finites" "first" "flatten" "floor" "from_entries" "fromdate"
-    "fromdateiso8601" "fromjson" "fromstream"
-    "getpath" "gmtime" "group_by" "gsub"
-    "has", "halt" "halt_error"
+    "capture" "cbrt" "ceil" "combinations" "contains" "copysign" "cos" "cosh"
+    "debug" "del" "delpaths" "drem"
+    "empty" "endswith" "env" "erf" "erfc" "error" "exp" "exp10" "exp2"
+    "explode" "expm1"
+    "fabs" "fdim" "finites" "first" "flatten" "floor" "fma" "fmax" "fmin"
+    "fmod" "format" "frexp" "from_entries" "fromdate" "fromdateiso8601"
+    "fromjson" "fromstream"
+    "gamma" "get_jq_origin" "get_prog_origin" "get_search_list" "getpath"
+    "gmtime" "group_by" "gsub"
+    "halt" "halt_error" "has" "hypot"
     "implode" "in" "index" "indices" "infinite" "input" "input_filename"
     "input_line_number" "inputs" "inside" "isempty" "isfinite" "isinfinite"
     "isnan" "isnormal" "iterables"
-    "join"
+    "j0" "j1" "jn" "join"
     "keys" "keys_unsorted"
-    "last" "leaf_paths" "length" "limit" "ltrimstr" "localtime"
-    "map" "map_values" "match" "max" "max_by" "min" "min_by" "mktime"
+    "last" "ldexp" "leaf_paths" "length" "lgamma" "lgamma_r" "limit"
+    "localtime" "log" "log10" "log1p" "log2" "logb" "ltrimstr"
+    "map" "map_values" "match" "max" "max_by" "min" "min_by" "mktime" "modf"
     "modulemeta"
-    "nan" "normals" "not" "now" "nth" "nulls" "numbers"
-    "objects" "or"
-    "path" "paths"
-    "range" "recurse" "recurse_down" "reverse" "rindex" "rtrimstr"
-    "scalars" "scan" "select" "setpath" "sort" "sort_by" "split" "split"
-    "stderr" "splits" "sqrt" "startswith" "strftime" "strings" "strptime" "sub"
-    "strflocaltime"
-    "test" "to_entries" "todate" "todateiso8601" "tojson" "tonumber" "tostream"
-    "tostring" "transpose" "truncate_stream" "type"
+    "nan" "nearbyint" "nextafter" "nexttoward" "normals" "not" "now" "nth"
+    "nulls" "numbers"
+    "objects"
+    "path" "paths" "pow" "pow10"
+    "range" "recurse" "recurse_down" "remainder" "repeat" "reverse" "rindex"
+    "rint" "round" "rtrimstr"
+    "scalars" "scalars_or_empty" "scalb" "scalbln" "scan" "select" "setpath"
+    "significand" "sin" "sinh" "sort" "sort_by" "split" "splits" "sqrt"
+    "startswith" "stderr" "strflocaltime" "strftime" "strings" "strptime" "sub"
+    "tan" "tanh" "test" "tgamma" "to_entries" "todate" "todateiso8601" "tojson"
+    "tonumber" "tostream" "tostring" "transpose" "trunc" "truncate_stream"
+    "type"
     "unique" "unique_by" "until" "utf8bytelength"
     "values"
-    "walk" "while" "with_entries")
+    "walk" "while" "with_entries"
+    "y0" "y1" "yn")
   "All builtin functions in jq.")
+
 
 (defconst jq--escapings
   '("text" "json" "html" "uri" "csv" "tsv" "sh" "base64")
