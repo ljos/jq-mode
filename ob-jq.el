@@ -72,6 +72,16 @@ First line specifies the keys."
       (lambda (row) (cl-mapcar 'cons header row))
       data))))
 
+(defun org-babel-jq-args (params)
+  "Return an --arg argument for each PARAMS :var"
+  (let ((vars (org-babel--get-vars params)))
+    (and vars
+         (mapconcat
+          (lambda (var)
+            (format "--arg %s %S" (car var) (cdr var)))
+          vars
+          " "))))
+
 (defun org-babel-execute:jq (body params)
   "Execute a block of jq code with org-babel.  This function is
 called by `org-babel-execute-src-block'"
@@ -79,6 +89,7 @@ called by `org-babel-execute-src-block'"
   (let* ((result-params (cdr (assq :result-params params)))
          (compact (equal "yes" (cdr (assq :compact params))))
          (cmd-line (cdr (assq :cmd-line params)))
+         (vars (org-babel-jq-args params))
          (in-file (cdr (assq :in-file params)))
          (code-file (let ((file (org-babel-temp-file "jq-")))
                       (with-temp-file file
@@ -100,6 +111,7 @@ called by `org-babel-execute-src-block'"
                                      (format "--from-file \"%s\"" code-file)
                                      (when compact "--compact-output")
                                      cmd-line
+                                     vars
                                      in-file))
                          " ")))
     (org-babel-reassemble-table

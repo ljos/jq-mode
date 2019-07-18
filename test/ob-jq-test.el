@@ -71,4 +71,16 @@
 (ert-deftest ob-jq-test/simple-execution ()
   "Test simple execution of jq source block."
   (ob-jq-test/test-src-block simple-execution
-    (should (string= "test" (org-babel-execute-src-block)))))
+    (should (string= "\"test\"\n" (org-babel-execute-src-block)))))
+
+(ert-deftest ob-jq-test/execution-with-cmd-line ()
+  "Test execution with a cmd-line arg."
+  (ob-jq-test/test-src-block execution-with-cmd-line
+			     (should (string= "test\n" (org-babel-execute-src-block)))))
+
+(ert-deftest ob-jq-test/execution-with-var ()
+  "Test execution with a var."
+  (ob-jq-test/test-src-block execution-with-var
+    (should (string= "{\"key\":\"testkey\"}\n" (org-babel-execute-src-block))))
+  (ob-jq-test/test-src-block execution-with-cmd-line-and-var
+    (should (string= "testkey\n" (org-babel-execute-src-block)))))
