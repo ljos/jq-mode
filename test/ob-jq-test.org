@@ -11,4 +11,28 @@
   #+END_SRC
 
   #+RESULTS: simple-execution
+  : "test"
+
+  #+NAME: execution-with-cmd-line
+  #+BEGIN_SRC jq :stdin json1 :cmd-line "-r"
+  .a
+  #+END_SRC
+
+  #+RESULTS: execution-with-cmd-line
   : test
+
+  #+NAME: execution-with-var
+  #+BEGIN_SRC jq :stdin json1 :var key="testkey" :compact yes
+  { $key }
+  #+END_SRC
+
+  #+RESULTS: execution-with-var
+  : {"key":"testkey"}
+
+  #+NAME: execution-with-cmd-line-and-var
+  #+BEGIN_SRC jq :stdin json1 :cmd-line "-r" :var key="testkey"
+  $key
+  #+END_SRC
+
+  #+RESULTS: execution-with-cmd-line-and-var
+  : testkey
