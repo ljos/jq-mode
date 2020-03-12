@@ -148,7 +148,7 @@
     (,(concat "@" (regexp-opt jq--escapings) "\\b") . font-lock-type-face)
     ;; Keywords
     ,(concat "\\b" (regexp-opt jq--keywords) "\\b")
-    ;; functions
+    ;; Functions
     ("\\bdef\\s-*\\([_[:alnum:]]+\\)\\s-*\(" (1 font-lock-function-name-face))))
 
 (defvar jq-mode-map
