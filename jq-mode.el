@@ -147,7 +147,9 @@
     ;; Format strings and escaping
     (,(concat "@" (regexp-opt jq--escapings) "\\b") . font-lock-type-face)
     ;; Keywords
-    ,(concat "\\b" (regexp-opt jq--keywords) "\\b")))
+    ,(concat "\\b" (regexp-opt jq--keywords) "\\b")
+    ;; Functions
+    ("\\bdef\\s-*\\([_[:alnum:]]+\\)\\s-*\(" (1 font-lock-function-name-face))))
 
 (defvar jq-mode-map
   (let ((map (make-sparse-keymap)))
