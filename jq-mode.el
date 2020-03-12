@@ -1,4 +1,4 @@
-;;; jq-mode.el --- Edit jq scripts.
+;;; jq-mode.el --- Edit jq scripts.  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2015--2018 Bjarte Johansen
 
@@ -62,8 +62,7 @@
 (defun jq-indent-line ()
   "Indent current line as a jq-script."
   (interactive)
-  (let ((indent-column 0)
-        (current (current-indentation)))
+  (let ((indent-column 0))
     (save-mark-and-excursion
      (if (> 0 (forward-line -1))
          (setq indent-column (current-indentation))
@@ -245,7 +244,7 @@
   (remove-hook 'minibuffer-setup-hook #'jq-interactive--minibuffer-setup)
   (delete-overlay jq-interactive--overlay))
 
-(defun jq-interactive--update (beg end len)
+(defun jq-interactive--update (_beg _end _len)
   (let ((contents (minibuffer-contents-no-properties)))
     (unless (or (not (minibufferp))
                 (and (string= "" contents)
