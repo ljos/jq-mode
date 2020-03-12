@@ -165,6 +165,11 @@
     syntax-table)
   "Syntax table for `jq-mode.'")
 
+(defun jq-completion-at-point ()
+  (when-let ((bnds (bounds-of-thing-at-point 'symbol)))
+    (unless (eq ?$ (char-before (car bnds))) ; ignore variables
+      (list (car bnds) (cdr bnds) jq--builtins))))
+
 (with-eval-after-load 'company-keywords
   (add-to-list 'company-keywords-alist
                `(jq-mode . ,(append jq--keywords
@@ -177,7 +182,8 @@
   :group 'jq
   (setq-local indent-line-function #'jq-indent-line)
   (setq-local font-lock-defaults '(jq-font-lock-keywords))
-  (setq-local comment-start "# "))
+  (setq-local comment-start "# ")
+  (add-hook 'completion-at-point-functions #'jq-completion-at-point nil t))
 
 ;;; jq-interactively
 (defgroup jq-interactive nil
@@ -246,13 +252,14 @@
   (delete-overlay jq-interactive--overlay))
 
 (defun jq-interactive--update (beg end len)
-  (let ((contents (minibuffer-contents-no-properties)))
-    (unless (or (not (minibufferp))
-                (and (string= "" contents)
-                     (equal last-command 'previous-history-element))
-                (string= contents jq-interactive--last-minibuffer-contents))
-      (setq jq-interactive--last-minibuffer-contents contents)
-      (jq-interactive--feedback))))
+  (unless (> (minibuffer-depth) 1)
+    (let ((contents (minibuffer-contents-no-properties)))
+      (unless (or (not (minibufferp))
+                  (and (string= "" contents)
+                       (equal last-command 'previous-history-element))
+                  (string= contents jq-interactive--last-minibuffer-contents))
+        (setq jq-interactive--last-minibuffer-contents contents)
+        (jq-interactive--feedback)))))
 
 (defun jq-interactive-indent-line ()
   "Indents a jq expression in the jq-interactive mini-buffer."
