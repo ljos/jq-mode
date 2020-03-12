@@ -167,7 +167,7 @@
 
 (defun jq-completion-at-point ()
   (when-let ((bnds (bounds-of-thing-at-point 'symbol)))
-    (unless (eq ?$ (char-before (car bnds))) ; ignore variables
+    (unless (eq ?$ (char-before (car bnds))) ; Ignore variables
       (list (car bnds) (cdr bnds) jq--builtins))))
 
 (with-eval-after-load 'company-keywords
