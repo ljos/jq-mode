@@ -1,4 +1,4 @@
-;;; ob-jq.el --- org-babel functions for jq scripts
+;;; ob-jq.el --- org-babel functions for jq scripts  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2015 Bjarte Johansen
 
