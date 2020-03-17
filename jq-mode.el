@@ -171,6 +171,7 @@
     (unless (eq ?$ (char-before (car bnds))) ; Ignore variables
       (list (car bnds) (cdr bnds) jq--builtins))))
 
+(defvar company-keywords-alist)
 (with-eval-after-load 'company-keywords
   (add-to-list 'company-keywords-alist
                `(jq-mode . ,(append jq--keywords
@@ -252,7 +253,7 @@
   (remove-hook 'minibuffer-setup-hook #'jq-interactive--minibuffer-setup)
   (delete-overlay jq-interactive--overlay))
 
-(defun jq-interactive--update (beg end len)
+(defun jq-interactive--update (_beg _end _len)
   (unless (> (minibuffer-depth) 1)
     (let ((contents (minibuffer-contents-no-properties)))
       (unless (or (not (minibufferp))
