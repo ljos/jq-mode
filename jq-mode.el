@@ -64,27 +64,30 @@
   (interactive)
   (let ((indent-column 0))
     (save-mark-and-excursion
-     (if (> 0 (forward-line -1))
-         (setq indent-column (current-indentation))
-       (end-of-line)
-       (or (search-backward ";" (line-beginning-position) t)
-           (back-to-indentation))
-       (skip-chars-forward "[:space:]" (line-end-position))
-       (when (looking-at-p
-              (concat (regexp-opt (remove "end" jq--keywords)) "\\b"))
-         (setq indent-column (+ indent-column jq-indent-offset)))))
+      (if (> 0 (forward-line -1))
+          (setq indent-column (current-indentation))
+        (end-of-line)
+        (or (search-backward ";" (line-beginning-position) t)
+            (back-to-indentation))
+        (skip-chars-forward "[:space:]" (line-end-position))
+        (cond  ((looking-at-p "#.*$")
+                (setq indent-column (current-indentation)))
+               ((looking-at-p
+                 (concat (regexp-opt (remove "end" jq--keywords)) "\\b"))
+                (setq indent-column (+ indent-column jq-indent-offset))))))
     (save-mark-and-excursion
-     (back-to-indentation)
-     (save-mark-and-excursion
-      (ignore-errors
-        (up-list -1)
-        (when (looking-at-p "(\\|{\\|\\[")
-          (setq indent-column (1+ (current-column))))))
-     (when (looking-at-p "|")
-       (setq indent-column (+ indent-column jq-indent-offset)))
-     (end-of-line)
-     (delete-horizontal-space)
-     (indent-line-to indent-column)))
+      (back-to-indentation)
+      (save-mark-and-excursion
+        (let ((extra (if (looking-at-p ")\\|}\\|\\]") 0 1)))
+          (ignore-errors
+            (up-list -1)
+            (when (looking-at-p "(\\|{\\|\\[")
+              (setq indent-column (+ extra (current-column)))))))
+      (when (looking-at-p "|")
+        (setq indent-column (+ indent-column jq-indent-offset)))
+      (end-of-line)
+      (delete-horizontal-space)
+      (indent-line-to indent-column)))
   (when (let ((search-spaces-regexp t))
           (string-match-p "^ *$"
                           (buffer-substring-no-properties
