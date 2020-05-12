@@ -226,8 +226,8 @@
     (let ((output (current-buffer)))
       (with-current-buffer jq-interactive--buffer
         (call-process-region
-         (point-min)
-         (point-max)
+         (car jq-interactive--positions)
+         (cdr jq-interactive--positions)
          shell-file-name
          nil
          output
@@ -240,7 +240,8 @@
                   jq-interactive--last-minibuffer-contents))))
       (ignore-errors
         (json-mode)
-        (font-lock-fontify-region (point-min) (point-max)))
+        (font-lock-fontify-region (car jq-interactive--positions) 
+                                  (cdr jq-interactive--positions)))
       (buffer-string))))
 
 (defun jq-interactive--feedback ()
