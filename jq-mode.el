@@ -37,6 +37,9 @@
 
 ;;; Code:
 (require 'smie)
+(require 'subr-x)
+
+(declare-function json-mode "json-mode")
 
 (defgroup jq nil
   "Major mode for editing jq queries."
