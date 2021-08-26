@@ -36,6 +36,13 @@
   =jq-mode= provides =ob-jq= for working with literate programming in
   Org mode.
 
+  Add =jq= under =org-babel-load-languages= in your .emacs file
+  
+  #+BEGIN_SRC emacs-lisp
+  (org-babel-do-load-languages 'org-babel-load-languages
+                               '((jq . t)))
+  #+END_SRC
+
 ** jq specific header arguments
 
 =ob-jq= provides some additional header arguments:
