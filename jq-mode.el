@@ -203,6 +203,11 @@
   :group 'jq-interactive
   :type 'string)
 
+(defcustom jq-interactive-font-lock-mode #'json-mode
+  "Mode to use for font locking when running jq-interactively."
+  :group 'jq-interactive
+  :type 'function)
+
 (defvar jq-interactive-history nil)
 
 (defvar jq-interactive--last-minibuffer-contents "")
@@ -228,8 +233,8 @@
                  (shell-quote-argument
                   jq-interactive--last-minibuffer-contents))))
       (ignore-errors
-        (json-mode)
-        (font-lock-fontify-region (car jq-interactive--positions) 
+        (funcall jq-interactive-font-lock-mode)
+        (font-lock-fontify-region (car jq-interactive--positions)
                                   (cdr jq-interactive--positions)))
       (buffer-string))))
 

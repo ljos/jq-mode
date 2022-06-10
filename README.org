@@ -31,13 +31,23 @@
   JSON buffer. Press =C-g= to abort, =C-j= for newline, =RET= commits
   any changes.
 
+** Use yq for yaml
+
+   It is possible to use [[https://github.com/kislyuk/yq][yq]] to process yaml with the interactive mode instead:
+
+   #+BEGIN_SRC emacs-lisp
+     (setq jq-interactive-command "yq"
+           jq-interactive-font-lock-mode #'yaml-mode
+           jq-interactive-default-options "--yaml-roundtrip")
+   #+END_SRC
+
 * Org babel
 
   =jq-mode= provides =ob-jq= for working with literate programming in
   Org mode.
 
   Add =jq= under =org-babel-load-languages= in your .emacs file
-  
+
   #+BEGIN_SRC emacs-lisp
   (org-babel-do-load-languages 'org-babel-load-languages
                                '((jq . t)))
