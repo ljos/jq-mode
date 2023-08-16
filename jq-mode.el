@@ -75,7 +75,7 @@
     (`(:before "|")  jq-indent-offset)))
 
 (defconst jq--keywords
-  '("as"
+  '("as" "and"
     "break"
     "catch"
     "def"
@@ -84,6 +84,7 @@
     "if" "import" "include"
     "label"
     "module"
+    "or"
     "reduce"
     "then" "try")
   "The keywords used in jq.")
@@ -137,13 +138,17 @@
 
 (defconst jq-font-lock-keywords
   `( ;; Variables
-    ("\\$\\w+" 0 font-lock-variable-name-face)
+    ("\\_<\\$\\w+" 0 font-lock-variable-name-face)
     ;; Format strings and escaping
-    (,(concat "@" (regexp-opt jq--escapings) "\\b") . font-lock-type-face)
+    (,(concat "\\_<@" (regexp-opt jq--escapings) "\\_>") . font-lock-type-face)
     ;; Keywords
-    ,(concat "\\b" (regexp-opt jq--keywords) "\\b")
+    ,(concat "\\_<" (regexp-opt jq--keywords) "\\_>")
+    ;; Builtins
+    (,(concat "\\_<" (regexp-opt jq--builtins) "\\_>") . font-lock-builtin-face)
+    ;; Constants
+    (,(concat "\\_<" (regexp-opt '("true" "false" "null")) "\\_>") . font-lock-type-face)
     ;; Functions
-    ("\\bdef\\s-*\\([_[:alnum:]]+\\)\\s-*\(" (1 font-lock-function-name-face))))
+    ("\\_<def\\s-*\\([_[:alnum:]]+\\)\\s-*\(" (1 font-lock-function-name-face))))
 
 (defvar jq-mode-map
   (let ((map (make-sparse-keymap)))
@@ -154,7 +159,7 @@
   (let ((syntax-table (make-syntax-table)))
     ;; Strings
     (modify-syntax-entry ?\" "\"\"" syntax-table)
-
+    (modify-syntax-entry ?$ "_" syntax-table)
     ;; Comments
     (modify-syntax-entry ?# "<" syntax-table)
     (modify-syntax-entry ?\n ">" syntax-table)
