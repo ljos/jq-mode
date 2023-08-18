@@ -219,6 +219,7 @@
 (defvar jq-interactive--positions nil)
 (defvar jq-interactive--buffer nil)
 (defvar jq-interactive--overlay nil)
+(defvar jq-interactive--is-raw nil)
 
 (defun jq-interactive--run-command ()
   (with-temp-buffer
@@ -232,9 +233,10 @@
          output
          nil
          shell-command-switch
-         (format "%s %s %s"
+         (format "%s %s %s %s"
                  jq-interactive-command
                  jq-interactive-default-options
+                 (if jq-interactive--is-raw "-r" "")
                  (shell-quote-argument
                   jq-interactive--last-minibuffer-contents))))
       (ignore-errors
@@ -282,10 +284,16 @@
     (insert-char ?\s (length jq-interactive-default-prompt)))
   (skip-chars-forward "[:space:]"))
 
+(defun jq-interactive-toggle-raw ()
+  (interactive)
+  (setq jq-interactive--is-raw (not jq-interactive--is-raw))
+  (jq-interactive--feedback))
+
 (defvar jq-interactive-map
   (let ((map (make-sparse-keymap)))
     (set-keymap-parent map minibuffer-local-map)
     (define-key map (kbd "<tab>") #'jq-interactive-indent-line)
+    (define-key map (kbd "M-r") #'jq-interactive-toggle-raw)
     (define-key map (kbd "C-j") #'electric-newline-and-maybe-indent)
     map)
   "Keymap for `jq-interactively'.")
