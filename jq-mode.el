@@ -90,46 +90,32 @@
   "The keywords used in jq.")
 
 (defconst jq--builtins
-  '("IN" "INDEX"
-    "JOIN"
+  '(;; "$__loc__" "$ARGS" "$ENV"
     "acos" "acosh" "add" "all" "any" "arrays" "ascii_downcase" "ascii_upcase"
-    "asin" "asinh" "atan" "atan2" "atanh"
-    "booleans" "bsearch" "builtins"
+    "asin" "asinh" "atan" "atan2" "atanh" "booleans" "bsearch" "builtins"
     "capture" "cbrt" "ceil" "combinations" "contains" "copysign" "cos" "cosh"
-    "debug" "del" "delpaths" "drem"
-    "empty" "endswith" "env" "erf" "erfc" "error" "exp" "exp10" "exp2"
-    "explode" "expm1"
-    "fabs" "fdim" "finites" "first" "flatten" "floor" "fma" "fmax" "fmin"
-    "fmod" "format" "frexp" "from_entries" "fromdate" "fromdateiso8601"
-    "fromjson" "fromstream"
-    "gamma" "get_jq_origin" "get_prog_origin" "get_search_list" "getpath"
-    "gmtime" "group_by" "gsub"
-    "halt" "halt_error" "has" "hypot"
-    "implode" "in" "index" "indices" "infinite" "input" "input_filename"
-    "input_line_number" "inputs" "inside" "isempty" "isfinite" "isinfinite"
-    "isnan" "isnormal" "iterables"
-    "j0" "j1" "jn" "join"
-    "keys" "keys_unsorted"
+    "debug" "del" "delpaths" "drem" "empty" "endswith" "env" "erf" "erfc" "error"
+    "exp" "exp10" "exp2" "explode" "expm1" "fabs" "fdim" "finites" "first"
+    "flatten" "floor" "fma" "fmax" "fmin" "fmod" "format" "frexp" "from_entries"
+    "fromdate" "fromdateiso8601" "fromjson" "fromstream" "gamma" "get_jq_origin"
+    "get_prog_origin" "get_search_list" "getpath" "gmtime" "group_by"
+    "gsub" "halt" "halt_error" "has" "hypot" "implode" "IN" "in" "INDEX"
+    "index" "indices" "infinite" "input" "input_filename" "input_line_number"
+    "inputs" "inside" "isempty" "isfinite" "isinfinite" "isnan"
+    "isnormal" "iterables" "j0" "j1" "jn" "JOIN" "join" "keys" "keys_unsorted"
     "last" "ldexp" "leaf_paths" "length" "lgamma" "lgamma_r" "limit"
-    "localtime" "log" "log10" "log1p" "log2" "logb" "ltrimstr"
-    "map" "map_values" "match" "max" "max_by" "min" "min_by" "mktime" "modf"
-    "modulemeta"
+    "localtime" "log" "log10" "log1p" "log2" "logb" "ltrimstr" "map" "map_values"
+    "match" "max" "max_by" "min" "min_by" "mktime" "modf" "modulemeta"
     "nan" "nearbyint" "nextafter" "nexttoward" "normals" "not" "now" "nth"
-    "nulls" "numbers"
-    "objects"
-    "path" "paths" "pow" "pow10"
-    "range" "recurse" "recurse_down" "remainder" "repeat" "reverse" "rindex"
-    "rint" "round" "rtrimstr"
-    "scalars" "scalars_or_empty" "scalb" "scalbln" "scan" "select" "setpath"
-    "significand" "sin" "sinh" "sort" "sort_by" "split" "splits" "sqrt"
-    "startswith" "stderr" "strflocaltime" "strftime" "strings" "strptime" "sub"
-    "tan" "tanh" "test" "tgamma" "to_entries" "todate" "todateiso8601" "tojson"
-    "tonumber" "tostream" "tostring" "transpose" "trunc" "truncate_stream"
-    "type"
-    "unique" "unique_by" "until" "utf8bytelength"
-    "values"
-    "walk" "while" "with_entries"
-    "y0" "y1" "yn")
+    "nulls" "numbers" "objects" "path" "paths" "pow" "pow10" "range" "recurse"
+    "recurse_down" "remainder" "repeat" "reverse" "rindex" "rint" "round"
+    "rtrimstr" "scalars" "scalb" "scalbln" "scan" "select"
+    "setpath" "significand" "sin" "sinh" "sort" "sort_by" "split" "splits"
+    "sqrt" "startswith" "stderr" "strflocaltime" "strftime" "strings" "strptime"
+    "sub" "tan" "tanh" "test" "tgamma" "to_entries" "todate" "todateiso8601"
+    "tojson" "tonumber" "tostream" "tostring" "transpose" "trunc" "truncate_stream"
+    "type" "unique" "unique_by" "until" "utf8bytelength" "values"
+    "walk" "while" "with_entries" "y0" "y1" "yn")
   "All builtin functions in jq.")
 
 (defconst jq--escapings
@@ -137,7 +123,7 @@
   "Jq escaping directives.")
 
 (defconst jq-font-lock-keywords
-  `( ;; Variables
+  `(;; Variables
     ("\\_<\\$\\w+" 0 font-lock-variable-name-face)
     ;; Format strings and escaping
     (,(concat "\\_<@" (regexp-opt jq--escapings) "\\_>") . font-lock-type-face)
@@ -148,7 +134,8 @@
     ;; Constants
     (,(concat "\\_<" (regexp-opt '("true" "false" "null")) "\\_>") . font-lock-type-face)
     ;; Functions
-    ("\\_<def\\s-*\\([_[:alnum:]]+\\)\\s-*\(" (1 font-lock-function-name-face))))
+    ("\\_<def\\s-+\\([_[:alpha:]][_[:alnum:]]*\\)\\s-*\(?"
+     (1 font-lock-function-name-face))))
 
 (defvar jq-mode-map
   (let ((map (make-sparse-keymap)))
@@ -159,10 +146,22 @@
   (let ((syntax-table (make-syntax-table)))
     ;; Strings
     (modify-syntax-entry ?\" "\"\"" syntax-table)
+    ;; Symbols
     (modify-syntax-entry ?$ "_" syntax-table)
+    (modify-syntax-entry ?_ "w" syntax-table)
     ;; Comments
     (modify-syntax-entry ?# "<" syntax-table)
     (modify-syntax-entry ?\n ">" syntax-table)
+    ;; Operators
+    (modify-syntax-entry ?+ "." syntax-table)
+    (modify-syntax-entry ?- "." syntax-table)
+    (modify-syntax-entry ?= "." syntax-table)
+    (modify-syntax-entry ?> "." syntax-table)
+    (modify-syntax-entry ?< "." syntax-table)
+    (modify-syntax-entry ?% "." syntax-table)
+    (modify-syntax-entry ?| "." syntax-table)
+    ;; XXX: .<builtin> shouldn't be font-locked as builtin, but 'env.' is ok
+    (modify-syntax-entry ?. "_" syntax-table)
     syntax-table)
   "Syntax table for `jq-mode.'")
 
