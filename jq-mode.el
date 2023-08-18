@@ -316,7 +316,7 @@
           nil
           jq-interactive-map
           nil
-          jq-interactive-history))
+          'jq-interactive-history))
         (goto-char beg)
         (delete-region beg end)
         (insert (plist-get (overlay-properties jq-interactive--overlay)
