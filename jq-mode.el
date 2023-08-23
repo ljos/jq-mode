@@ -293,7 +293,7 @@
   (let ((map (make-sparse-keymap)))
     (set-keymap-parent map minibuffer-local-map)
     (define-key map (kbd "<tab>") #'jq-interactive-indent-line)
-    (define-key map (kbd "M-r") #'jq-interactive-toggle-raw)
+    (define-key map (kbd "C-c C-r") #'jq-interactive-toggle-raw)
     (define-key map (kbd "C-j") #'electric-newline-and-maybe-indent)
     map)
   "Keymap for `jq-interactively'.")
