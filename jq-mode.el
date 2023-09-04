@@ -187,6 +187,11 @@
   (add-hook 'completion-at-point-functions #'jq-completion-at-point nil t)
   (smie-setup jq-smie-grammar #'jq-smie-rules))
 
+;;;###autoload
+(add-to-list 'auto-mode-alist '("\\.jq\\'" . jq-mode))
+;;;###autoload
+(add-to-list 'interpreter-mode-alist '("jq" . jq-mode))
+
 ;;; jq-interactively
 (defgroup jq-interactive nil
   "Major mode for editing json with jq."
