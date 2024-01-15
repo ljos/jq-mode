@@ -112,7 +112,7 @@ called by `org-babel-execute-src-block'"
                                      (when compact "--compact-output")
                                      cmd-line
                                      vars
-                                     in-file))
+                                     (when in-file (shell-quote-argument (expand-file-name in-file)))))
                          " ")))
     (org-babel-reassemble-table
      (let ((results
