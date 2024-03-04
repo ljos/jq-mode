@@ -60,10 +60,14 @@
       (insts (insts ";" inst)
              (insts "|" inst)
              (inst))
+      (keyval (id ":" id))
+      (keyvals (keyval "," keyval)
+               (keyval))
+      (dict ("{" keyvals "}"))
       (branches (insts "elif" insts)
                 (insts "else" inst)))
     '((assoc "end" "elif" "else" "then"))
-    '((assoc "|" ";" ":")))))
+    '((assoc "|" ";" ":" ",")))))
 
 (defun jq-smie-rules (kind token)
   (pcase (list kind token)
@@ -152,6 +156,15 @@
     ;; Comments
     (modify-syntax-entry ?# "<" syntax-table)
     (modify-syntax-entry ?\n ">" syntax-table)
+
+    ;; Parenthesis
+    (modify-syntax-entry ?\( "(" syntax-table)
+    (modify-syntax-entry ?\) ")" syntax-table)
+    (modify-syntax-entry ?\{ "(" syntax-table)
+    (modify-syntax-entry ?\} ")" syntax-table)
+    (modify-syntax-entry ?\[ "(" syntax-table)
+    (modify-syntax-entry ?\] ")" syntax-table)
+
     ;; Operators
     (modify-syntax-entry ?+ "." syntax-table)
     (modify-syntax-entry ?- "." syntax-table)
