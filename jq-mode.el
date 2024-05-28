@@ -230,6 +230,11 @@
   :group 'jq-interactive
   :type 'function)
 
+(defcustom jq-interactive-delay 0.4
+  "The time to wait for minibuffer input before jq command is fired."
+  :group 'jq-interactive
+  :type 'number)
+
 (defvar jq-interactive-history nil)
 
 (defvar jq-interactive--last-minibuffer-contents "")
@@ -237,6 +242,7 @@
 (defvar jq-interactive--buffer nil)
 (defvar jq-interactive--overlay nil)
 (defvar jq-interactive--is-raw nil)
+(defvar jq-interactive--timer nil)
 
 (defun jq-interactive--run-command ()
   (with-temp-buffer
@@ -289,8 +295,12 @@
                   (and (string= "" contents)
                        (equal last-command 'previous-history-element))
                   (string= contents jq-interactive--last-minibuffer-contents))
+        (when jq-interactive--timer
+          (cancel-timer jq-interactive--timer)
+          (setq jq-interactive--timer nil))
         (setq jq-interactive--last-minibuffer-contents contents)
-        (jq-interactive--feedback)))))
+        (setq jq-interactive--timer
+              (run-at-time jq-interactive-delay nil #'jq-interactive--feedback))))))
 
 (defun jq-interactive-indent-line ()
   "Indents a jq expression in the jq-interactive mini-buffer."
