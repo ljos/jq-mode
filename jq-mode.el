@@ -348,7 +348,7 @@
          (deactivate-mark)
          (read-from-minibuffer
           jq-interactive-default-prompt
-          nil
+          "."
           jq-interactive-map
           nil
           'jq-interactive-history))
