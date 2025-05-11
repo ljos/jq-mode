@@ -59,6 +59,96 @@
 
 - =:compact= :: Add =-c= to =jq= arguments list suppressing pretty printing
 
+** Examples
+
+*** Using ob-jq with a file as input
+
+- =:in-file= is used to set the input filename.  In this example [apartments.json](https://pastebin.com/UKtNrGGt) is used.
+- =:cmd-line= can be used to pass =jq= extra command line parameters.
+- =:wrap= can be used to wrap the result in another org block.  In this example, it's a src block that contains JSON.
+
+#+begin_src org
+,#+begin_src jq :in-file apartments.json :cmd-line "-r" :wrap src json
+[ .[] | select(.addr_prefecture == "Aichi") ]
+  | sort_by(.monthly_cost)
+  | .[]
+  | { link, monthly_cost }
+,#+end_src
+
+,#+RESULTS:
+,#+begin_src json
+{
+  "link": "https://realestate.co.jp/en/rent/view/1095206",
+  "monthly_cost": 157200
+}
+{
+  "link": "https://realestate.co.jp/en/rent/view/1095222",
+  "monthly_cost": 163200
+}
+,#+end_src
+#+end_src
+
+*** Using ob-jq with JSON data from an inert bock.
+
+- If you want to include the JSON in the org document, give it a =#+name:=.
+- Then use =:stdin= to feed it into a jq src block like this.
+
+#+begin_src org
+,#+name: inert
+,#+begin_example
+,{ "name": "gg" }
+,#+end_example
+,
+,#+begin_src jq :stdin inert
+,.name
+,#+end_src
+,
+,#+RESULTS:
+,: "gg"
+#+end_src
+
+*** Using ob-jq with the output of another block
+
+#+begin_src org
+,#+name: btcusd
+,#+begin_src sh :results output :wrap src json
+curl --silent 'https://www.bitstamp.net/api/v2/ohlc/btcusd/?start=1359936000&limit=3&step=60'
+,#+end_src
+
+,#+RESULTS: btcusd
+,#+begin_src json
+{"data": {"pair": "BTC/USD", "ohlc": [{"timestamp": "1359936000", "open": "20.29", "high": "20.29", "low": "20.29", "close": "20.29", "volume": "0.00000000"}, {"timestamp": "1359936060", "open": "20.29", "high": "20.29", "low": "20.29", "close": "20.29", "volume": "0.00000000"}, {"timestamp": "1359936120", "open": "20.29", "high": "20.29", "low": "20.29", "close": "20.29", "volume": "0.00000000"}]}}
+,#+end_src
+
+,#+begin_src jq :stdin btcusd :wrap src json
+.data.ohlc
+  | .[]
+  | { close,
+      timestamp: .timestamp
+        | tonumber
+        | strftime("%Y-%m-%dT%H:%M:%S")
+    }
+,#+end_src
+
+,#+RESULTS:
+,#+begin_src json
+{
+  "close": "20.29",
+  "timestamp": "2013-02-04T00:00:00"
+}
+{
+  "close": "20.29",
+  "timestamp": "2013-02-04T00:01:00"
+}
+{
+  "close": "20.29",
+  "timestamp": "2013-02-04T00:02:00"
+}
+,#+end_src
+#+end_src
+
+- It works just like passing in an inert block.  Just give it a =#+name:= and pass it in via =:stdin=.
+
 * Bugs and Enhancements
   If you have a problem or would like to see it get better in a
   specific way, feel free to drop an issue in [[https://github.com/ljos/jq-mode/issues][the issue tracker]].
