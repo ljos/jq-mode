@@ -96,15 +96,15 @@
 #+begin_src org
 ,#+name: inert
 ,#+begin_example
-,{ "name": "gg" }
+{ "name": "gg" }
 ,#+end_example
-,
+
 ,#+begin_src jq :stdin inert
-,.name
+.name
 ,#+end_src
-,
+
 ,#+RESULTS:
-,: "gg"
+: "gg"
 #+end_src
 
 *** Using ob-jq with the output of another block
