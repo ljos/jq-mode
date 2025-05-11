@@ -109,6 +109,8 @@
 
 *** Using ob-jq with the output of another block
 
+- It works just like passing in an inert block.  Just give it a =#+name:= and pass it in via =:stdin=.
+
 #+begin_src org
 ,#+name: btcusd
 ,#+begin_src sh :results output :wrap src json
@@ -146,8 +148,6 @@ curl --silent 'https://www.bitstamp.net/api/v2/ohlc/btcusd/?start=1359936000&lim
 }
 ,#+end_src
 #+end_src
-
-- It works just like passing in an inert block.  Just give it a =#+name:= and pass it in via =:stdin=.
 
 * Bugs and Enhancements
   If you have a problem or would like to see it get better in a
