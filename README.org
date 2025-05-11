@@ -63,7 +63,7 @@
 
 *** Using ob-jq with a file as input
 
-- =:in-file= is used to set the input filename.  In this example [apartments.json](https://pastebin.com/UKtNrGGt) is used.
+- =:in-file= is used to set the input filename.  In this example [[https://pastebin.com/UKtNrGGt][apartments.json]] is used.
 - =:cmd-line= can be used to pass =jq= extra command line parameters.
 - =:wrap= can be used to wrap the result in another org block.  In this example, it's a src block that contains JSON.
 
