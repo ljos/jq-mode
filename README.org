@@ -53,6 +53,15 @@
                                '((jq . t)))
   #+END_SRC
 
+** Why should I write jq expressions in org documents?
+
+Writing jq expressions in org documents is a huge usability improvment over writing them on the command line.
+
+- Being in a proper editor makes it easier to write multiline expressions.
+- Iteration is very fast.
+- Related =jq= expressions can be organized together into a [[https://en.wikipedia.org/wiki/Notebook_interface][computational notebook]].
+  + In contrast, command line =jq= expressions tend to be ephemeral.
+
 ** jq specific header arguments
 
 =ob-jq= provides some additional header arguments:
