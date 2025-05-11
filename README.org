@@ -97,7 +97,7 @@ Writing =jq= expressions in org documents is a huge usability improvment over wr
 ,#+end_src
 #+end_src
 
-*** Using ob-jq with JSON data from an inert bock.
+*** Using ob-jq with JSON data from an inert block.
 
 - If you want to include the JSON in the org document, give it a =#+name:=.
 - Then use =:stdin= to feed it into a jq src block like this.
