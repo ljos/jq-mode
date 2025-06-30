@@ -26,7 +26,7 @@
       (define-key json-mode-map (kbd "C-c C-j") #'jq-interactively))
   #+END_SRC
 
-  or you can call =M-x jq-interactivly=. =jq-interactively= runs the
+  or you can call =M-x jq-interactively=. =jq-interactively= runs the
   expression that is written in the minibuffer iteratively over the
   JSON buffer. Press =C-g= to abort, =C-j= for newline, =RET= commits
   any changes.
