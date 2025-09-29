@@ -158,12 +158,12 @@
     (modify-syntax-entry ?\n ">" syntax-table)
 
     ;; Parenthesis
-    (modify-syntax-entry ?\( "(" syntax-table)
-    (modify-syntax-entry ?\) ")" syntax-table)
-    (modify-syntax-entry ?\{ "(" syntax-table)
-    (modify-syntax-entry ?\} ")" syntax-table)
-    (modify-syntax-entry ?\[ "(" syntax-table)
-    (modify-syntax-entry ?\] ")" syntax-table)
+    (modify-syntax-entry ?\( "()" syntax-table)
+    (modify-syntax-entry ?\) ")(" syntax-table)
+    (modify-syntax-entry ?\{ "(}" syntax-table)
+    (modify-syntax-entry ?\} "){" syntax-table)
+    (modify-syntax-entry ?\[ "(]" syntax-table)
+    (modify-syntax-entry ?\] ")[" syntax-table)
 
     ;; Operators
     (modify-syntax-entry ?+ "." syntax-table)
