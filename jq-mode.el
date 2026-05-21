@@ -238,6 +238,7 @@
 (defvar jq-interactive-history nil)
 
 (defvar jq-interactive--last-minibuffer-contents "")
+(defvar jq-interactive--error-buffer "*jq-interactive*")
 (defvar jq-interactive--positions nil)
 (defvar jq-interactive--buffer nil)
 (defvar jq-interactive--overlay nil)
@@ -246,36 +247,54 @@
 
 (defun jq-interactive--run-command ()
   (with-temp-buffer
-    (let ((output (current-buffer)))
-      (with-current-buffer jq-interactive--buffer
-        (call-process-region
-         (car jq-interactive--positions)
-         (cdr jq-interactive--positions)
-         shell-file-name
-         nil
-         output
-         nil
-         shell-command-switch
-         (format "%s %s %s %s"
-                 jq-interactive-command
-                 jq-interactive-default-options
-                 (if jq-interactive--is-raw "-r" "")
-                 (shell-quote-argument
-                  jq-interactive--last-minibuffer-contents))))
+    (let* ((output (current-buffer))
+           (exit-code
+            (with-current-buffer jq-interactive--buffer
+              (call-process-region
+               (car jq-interactive--positions)
+               (cdr jq-interactive--positions)
+               shell-file-name
+               nil
+               output
+               nil
+               shell-command-switch
+               (format "%s %s %s %s"
+                       jq-interactive-command
+                       jq-interactive-default-options
+                       (if jq-interactive--is-raw "-r" "")
+                       (shell-quote-argument
+                        jq-interactive--last-minibuffer-contents))))))
       (ignore-errors
         (funcall jq-interactive-font-lock-mode)
         (font-lock-fontify-region (car jq-interactive--positions)
                                   (cdr jq-interactive--positions)))
-      (buffer-string))))
+      (cons exit-code (buffer-string)))))
+
+(defun jq-interactive--report-error (message)
+  (let ((error-window (or (get-buffer-window jq-interactive--error-buffer)
+                          (with-current-buffer jq-interactive--buffer
+                            (let ((new-window (split-window-below -8)))
+                              (set-window-buffer new-window jq-interactive--error-buffer)
+                              new-window)))))
+    (with-current-buffer jq-interactive--error-buffer
+      (erase-buffer)
+      (insert message))))
 
 (defun jq-interactive--feedback ()
   (save-mark-and-excursion
    (let ((font-lock-defaults '(jq-font-lock-keywords)))
      (font-lock-fontify-region (point) (point-max))))
   (with-current-buffer jq-interactive--buffer
-    (overlay-put jq-interactive--overlay
-                 'after-string
-                 (jq-interactive--run-command))))
+    (let* ((result (jq-interactive--run-command))
+           (exit-code (car result))
+           (output (cdr result)))
+      (if (> exit-code 0)
+          (jq-interactive--report-error output)
+        (progn
+          (jq-interactive--report-error "")
+          (overlay-put jq-interactive--overlay
+                       'after-string
+                       output))))))
 
 (defun jq-interactive--minibuffer-setup ()
   (setq-local font-lock-defaults '(jq-font-lock-keywords))
@@ -286,6 +305,8 @@
 (defun jq-interactive--quit ()
   (remove-hook 'after-change-functions #'jq-interactive--update)
   (remove-hook 'minibuffer-setup-hook #'jq-interactive--minibuffer-setup)
+  (when-let ((error-window (get-buffer-window jq-interactive--error-buffer)))
+    (delete-window error-window))
   (delete-overlay jq-interactive--overlay))
 
 (defun jq-interactive--update (_beg _end _len)
