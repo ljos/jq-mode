@@ -76,7 +76,7 @@
     (`(:after ,(or "elif" "else")) jq-indent-offset)
     (`(:after ,(or "end" ";")) (smie-rule-parent))
     (`(:before "catch") (smie-rule-parent))
-    (`(:before "|")  jq-indent-offset)))
+    (`(:before ,(or "|" "(" ")"))  jq-indent-offset)))
 
 (defconst jq--keywords
   '("as" "and"
