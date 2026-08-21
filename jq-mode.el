@@ -54,8 +54,8 @@
   (smie-prec2->grammar
    (smie-bnf->prec2
     '((id)
-      (inst ("def" id ":" insts)
-            ("if" inst "then" branches "end")
+      (inst ("def" id ":" insts ";")
+            ("if" inst "then" branches)
             ("try" inst "catch" inst))
       (insts (insts ";" inst)
              (insts "|" inst)
@@ -64,19 +64,19 @@
       (keyvals (keyval "," keyval)
                (keyval))
       (dict ("{" keyvals "}"))
-      (branches (insts "elif" insts)
-                (insts "else" inst)))
+      (branches (insts "elif" inst "then" branches)
+                (insts "else" inst "end")))
     '((assoc "end" "elif" "else" "then"))
     '((assoc "|" ";" ":" ",")))))
 
 (defun jq-smie-rules (kind token)
   (pcase (list kind token)
     (`(:elem basic) jq-indent-offset)
-    (`(:before ,(or "then" "elif" "else")) (smie-rule-parent))
+    (`(:before ,(or "then" "elif" "else" "end")) (smie-rule-parent))
     (`(:after ,(or "elif" "else")) jq-indent-offset)
-    (`(:after "end") (smie-rule-parent))
+    (`(:after ,(or "end" ";")) (smie-rule-parent))
     (`(:before "catch") (smie-rule-parent))
-    (`(:before "|")  jq-indent-offset)))
+    (`(:before ,(or "|" "(" ")"))  jq-indent-offset)))
 
 (defconst jq--keywords
   '("as" "and"
